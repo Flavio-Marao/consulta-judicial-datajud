@@ -3,25 +3,34 @@ import * as React from "react";
 import Loader from "./Loader";
 import ProcessoResultado from "./ProcessoResultado";
 import { toast } from "@/hooks/use-toast";
+import { parsePTDate } from "@/lib/utils";
 
-type ProcessoData = {
-  numero_processo: string;
+type Assunto = { codigo: number; nome: string };
+type Movimento = {
+  codigo: number;
+  nome: string;
+  dataHora: string;
+  complementosTabelados?: { codigo: number; valor: number; nome: string; descricao: string }[];
+};
+export type ProcessoDataFrontend = {
+  numeroProcesso: string;
   classe: string;
-  assunto: string;
-  orgao_julgador: string;
+  assuntos: string[];
+  orgaoJulgador: string;
   movimentacoes: { data: string; descricao: string }[];
+  dataUltimaAtualizacao?: string;
+  dataAjuizamento?: string;
+  gabinete?: string;
 };
 
 export default function ProcessoSearch() {
   const [numero, setNumero] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [erro, setErro] = React.useState<string | null>(null);
-  const [resultado, setResultado] = React.useState<ProcessoData | null>(null);
+  const [resultado, setResultado] = React.useState<ProcessoDataFrontend | null>(null);
 
-  // Novo: endpoint customizável para facilitar testes e debug
-  const [apiUrl, setApiUrl] = React.useState(
-    "https://SEU_DOMINIO_N8N/webhook/datajud"
-  );
+  // Endpoint customizável
+  const [apiUrl, setApiUrl] = React.useState("https://SEU_DOMINIO_N8N/webhook/datajud");
   const [showApiInput, setShowApiInput] = React.useState(false);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,20 +66,54 @@ export default function ProcessoSearch() {
         throw new Error("Processo não encontrado ou erro na consulta.");
       }
 
-      const data = await resp.json();
+      const arr = await resp.json();
 
-      if (!data || !data.numero_processo) {
+      if (!arr || !Array.isArray(arr) || !arr[0]) {
         throw new Error("Processo não localizado.");
       }
 
+      const d = arr[0];
+
+      // Parse assuntos (array de objetos para array de string)
+      const assuntos = Array.isArray(d.assunto)
+        ? d.assunto.map((a: any) => a.nome)
+        : [];
+
+      // Movimentações
+      const movimentacoes =
+        Array.isArray(d.movimentacoes) && d.movimentacoes.length
+          ? d.movimentacoes.map((mov: Movimento) => ({
+              data: mov.dataHora
+                ? parsePTDate(mov.dataHora)
+                : "",
+              descricao: mov.nome,
+            }))
+          : [];
+
+      // Data última atualização e ajuizamento:
+      // Atenção: pode ter '\n', vamos limpar.
+      const dataUltimaAtualizacao = d.dataUltimaAtualizacao
+        ? d.dataUltimaAtualizacao.replace(/\s/g, "")
+        : "";
+      const dataAjuizamento = d["Data do Ajuizamento"]
+        ? d["Data do Ajuizamento"].replace(/\s/g, "")
+        : "";
+
+      // Gabinete pode ser campo no index 1 do array.
+      const gabinete =
+        arr.length > 1 && arr[1].orgaoJulgador
+          ? arr[1].orgaoJulgador
+          : undefined;
+
       setResultado({
-        numero_processo: data.numero_processo,
-        classe: data.classe,
-        assunto: data.assunto,
-        orgao_julgador: data.orgao_julgador,
-        movimentacoes: Array.isArray(data.movimentacoes)
-          ? data.movimentacoes
-          : [],
+        numeroProcesso: d.numroProcesso || "",
+        classe: d.classe || "",
+        assuntos,
+        orgaoJulgador: d.orgaoJulgador || d.Vara || "", // fallback para Vara
+        movimentacoes,
+        dataUltimaAtualizacao,
+        dataAjuizamento,
+        gabinete,
       });
     } catch (error: any) {
       let msg =
@@ -110,7 +153,6 @@ export default function ProcessoSearch() {
         >
           Consultar
         </button>
-        {/* Botão para mostrar/esconder campo de endpoint */}
         <button
           type="button"
           className="ml-1 text-xs underline"
@@ -119,7 +161,6 @@ export default function ProcessoSearch() {
           {showApiInput ? "Ocultar endpoint" : "Editar endpoint"}
         </button>
       </form>
-      {/* Campo para o usuário informar endpoint de teste */}
       {showApiInput && (
         <div className="max-w-2xl mx-auto mt-3 flex gap-2 items-center">
           <input
