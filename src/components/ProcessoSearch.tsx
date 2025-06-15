@@ -82,7 +82,7 @@ export default function ProcessoSearch() {
       // Movimentações
       const movimentacoes =
         Array.isArray(d.movimentacoes) && d.movimentacoes.length
-          ? d.movimentacoes.map((mov: Movimento) => ({
+          ? d.movimentacoes.map((mov: any) => ({
               data: mov.dataHora
                 ? parsePTDate(mov.dataHora)
                 : "",
@@ -90,13 +90,16 @@ export default function ProcessoSearch() {
             }))
           : [];
 
-      // Data última atualização e ajuizamento:
-      // Atenção: pode ter '\n', vamos limpar.
+      // Data última atualização
       const dataUltimaAtualizacao = d.dataUltimaAtualizacao
         ? d.dataUltimaAtualizacao.replace(/\s/g, "")
         : "";
-      const dataAjuizamento = d["Data do Ajuizamento"]
-        ? d["Data do Ajuizamento"].replace(/\s/g, "")
+
+      // >>>>> Ajuste Data do Ajuizamento <<<<<
+      // Tenta pegar os campos possíveis em d
+      const rawDataAjuizamento = d.dataAjuizamento || d["Data do Ajuizamento"];
+      const dtAjuizamento = rawDataAjuizamento
+        ? parsePTDate(rawDataAjuizamento.toString().replace(/\s/g, ""))
         : "";
 
       // Gabinete pode ser campo no index 1 do array.
@@ -109,10 +112,10 @@ export default function ProcessoSearch() {
         numeroProcesso: d.numroProcesso || "",
         classe: d.classe || "",
         assuntos,
-        orgaoJulgador: d.orgaoJulgador || d.Vara || "", // fallback para Vara
+        orgaoJulgador: d.orgaoJulgador || d.Vara || "",
         movimentacoes,
         dataUltimaAtualizacao,
-        dataAjuizamento,
+        dataAjuizamento: dtAjuizamento,
         gabinete,
       });
     } catch (error: any) {
