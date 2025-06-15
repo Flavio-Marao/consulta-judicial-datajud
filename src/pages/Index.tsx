@@ -1,9 +1,8 @@
+
 import ProcessoSearch from "@/components/ProcessoSearch";
-import Header from "@/components/Header";
 
 const Index = () => (
   <div className="min-h-screen bg-background flex flex-col justify-center px-2 py-12">
-    <Header />
     <div className="w-full max-w-4xl mx-auto">
       <header className="mb-10 text-center">
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 text-primary">
