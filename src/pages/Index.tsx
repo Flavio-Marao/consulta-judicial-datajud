@@ -1,7 +1,6 @@
 
 import Header from "@/components/Header";
 import ProcessoSearch from "@/components/ProcessoSearch";
-import Footer from "@/components/Footer";
 
 const Index = () => (
   <div className="min-h-screen bg-background flex flex-col">
@@ -22,7 +21,6 @@ const Index = () => (
         <ProcessoSearch />
       </div>
     </div>
-    <Footer />
   </div>
 );
 
