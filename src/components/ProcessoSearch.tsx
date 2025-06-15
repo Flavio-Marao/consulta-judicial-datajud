@@ -18,10 +18,20 @@ export default function ProcessoSearch() {
   const [erro, setErro] = React.useState<string | null>(null);
   const [resultado, setResultado] = React.useState<ProcessoData | null>(null);
 
+  // Novo: endpoint customizável para facilitar testes e debug
+  const [apiUrl, setApiUrl] = React.useState(
+    "https://SEU_DOMINIO_N8N/webhook/datajud"
+  );
+  const [showApiInput, setShowApiInput] = React.useState(false);
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumero(e.target.value);
     setErro(null);
     setResultado(null);
+  };
+
+  const handleApiInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiUrl(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +47,7 @@ export default function ProcessoSearch() {
     setLoading(true);
 
     try {
-      const resp = await fetch("https://SEU_DOMINIO_N8N/webhook/datajud", {
+      const resp = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ numero_processo: numero.trim() }),
@@ -100,7 +110,27 @@ export default function ProcessoSearch() {
         >
           Consultar
         </button>
+        {/* Botão para mostrar/esconder campo de endpoint */}
+        <button
+          type="button"
+          className="ml-1 text-xs underline"
+          onClick={() => setShowApiInput((v) => !v)}
+        >
+          {showApiInput ? "Ocultar endpoint" : "Editar endpoint"}
+        </button>
       </form>
+      {/* Campo para o usuário informar endpoint de teste */}
+      {showApiInput && (
+        <div className="max-w-2xl mx-auto mt-3 flex gap-2 items-center">
+          <input
+            type="text"
+            value={apiUrl}
+            onChange={handleApiInput}
+            className="flex-1 border rounded px-2 py-1 text-xs"
+          />
+          <span className="text-xs text-muted-foreground">URL do endpoint da API</span>
+        </div>
+      )}
 
       {loading && <Loader />}
 
