@@ -11,7 +11,7 @@ export default function Footer() {
           <span className="font-bold text-lg">TJMA - Consulta Pública</span>
         </div>
         <div className="text-sm">
-          © 2024 Tribunal de Justiça do Maranhão. Todos os direitos reservados.
+          © 2025 Tribunal de Justiça do Maranhão. Todos os direitos reservados.
         </div>
         <div className="text-xs opacity-90 mt-1">
           Sistema desenvolvido para consulta pública de processos judiciais
