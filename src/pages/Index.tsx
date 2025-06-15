@@ -1,9 +1,10 @@
 
 import Header from "@/components/Header";
 import ProcessoSearch from "@/components/ProcessoSearch";
+import Footer from "@/components/Footer";
 
 const Index = () => (
-  <div className="min-h-screen bg-background flex flex-col">
+  <div className="min-h-screen flex flex-col bg-background">
     <Header />
     <div className="flex-1 px-2 py-12">
       <div className="w-full max-w-4xl mx-auto mt-8">
@@ -21,6 +22,7 @@ const Index = () => (
         <ProcessoSearch />
       </div>
     </div>
+    <Footer />
   </div>
 );
 
