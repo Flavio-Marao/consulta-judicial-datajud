@@ -145,7 +145,11 @@ export default function ProcessoSearch() {
         />
         <button
           type="submit"
-          className="bg-primary text-primary-foreground font-semibold px-6 py-2 rounded-md hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+          className="font-semibold px-6 py-2 rounded-md hover:bg-[#102651] transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+          style={{
+            background: "#12306b",
+            color: "#fff"
+          }}
           disabled={loading}
         >
           Consultar
