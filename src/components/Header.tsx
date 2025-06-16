@@ -38,7 +38,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col items-end">
             <span className="font-bold tracking-wide">DATAJUD</span>
-            <span className="text-xs font-normal opacity-90">Sistema Nacional</span>
+            <span className="text-xs font-normal opacity-90">Sistema – SIESPJ</span>
           </div>
         </div>
       </div>
